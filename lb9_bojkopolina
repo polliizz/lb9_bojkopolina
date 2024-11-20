@@ -1,0 +1,86 @@
+#include <iostream>
+#include <vector>
+#include <string>
+#include <algorithm>
+using namespace std;
+
+class Book {
+public:
+string title;
+string author;
+string isbn;
+int year;
+Book(const string& a, const string& b, const string& c, int d)
+        : title(a), author(b), isbn(c), year(d) {}
+};
+class Library {
+private:
+vector<Book> books;
+public:
+void addBook(const string& title, const string& author, const string& isbn, int year) {
+        books.emplace_back(title, author, isbn, year);
+}
+bool removeBookByISBN(const std::string& isbn) {
+auto it = remove_if(books.begin(), books.end(), [&isbn](const Book& book) {
+            return book.isbn == isbn;
+});
+if (it != books.end()) {
+    books.erase(it, books.end());
+            return true;
+}
+            return false;
+}
+vector<Book> findBooksByAuthor(const string& author) const {
+vector<Book> results;
+for (const auto& book : books) {
+if (book.author == author) {
+results.push_back(book);
+}
+}
+return results;
+}
+vector<Book> findBooksByYearRange(int startYear, int endYear) const {
+vector<Book> results;
+for (const auto& book : books) {
+if (book.year >= startYear && book.year <= endYear) {
+results.push_back(book);
+}
+}
+return results;
+}
+void printAllBooks() const {
+if (books.empty()) {
+cout << "Бібліотека порожня.\n";
+return;
+}
+for (const auto& book : books) {
+cout << "Назва: " << book.title << ", Автор: " << book.author
+<< ", ISBN: " << book.isbn << ", Рік: " << book.year << '\n';
+}
+}
+};
+int main() {
+    Library library;
+library.addBook("Сезон у пеклі", "Артюр Рембо", "978-2-253-13121-2", 1873);
+library.addBook("Палиця і шляпа", "Терри Пратчетт","978-5-699-16610-7", 2006);
+cout << "Всі книги в бібліотеці:\n";
+library.printAllBooks();
+cout << "\nКниги авторства Артюр Рембо:\n";
+auto booksByAuthor = library.findBooksByAuthor("Артюр Рембо");
+for (const auto& book : booksByAuthor) {
+cout << "Назва: " << book.title << ", Рік: " << book.year << '\n';
+}
+cout << "\nКниги, видані між 1845 і 1950 роками:\n";
+auto booksByYearRange = library.findBooksByYearRange(1845, 1950);
+for (const auto& book : booksByYearRange) {
+cout << "Назва: " << book.title << ", Автор: " << book.author << '\n';
+}
+cout << "\nВидалення книги з ISBN 978-2-253-13121-2.\n";
+if (library.removeBookByISBN("978-2-253-13121-2")) {
+cout << "Книга видалена.\n";
+} 
+else {
+cout << "Книга не знайдена.\n";
+}
+return 0;
+}
